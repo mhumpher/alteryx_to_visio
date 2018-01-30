@@ -5,7 +5,7 @@
 #http://www.diveintopython3.net/xml.html
 
 #source file
-alteryxPath = ""
+alteryxPath = 'C:\\Program Files\\Alteryx 11.3\\bin\\RuntimeData\\Macros\\CountRecords.yxmc'
 
 import xml.etree.ElementTree as etree
 import win32com.client
