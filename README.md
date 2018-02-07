@@ -15,3 +15,17 @@ Difficulties:
   
 * Updating Visio
   * Matching tools to Visio shape objects - need to read Alteryx XML and Visio and determine one-to-one connections
+  
+* Working Ideas
+ * Create Class for Tools with dictionaries of connections in and out
+ * Create Class for Workflow with dictionary of tools
+ * Create Class for Formulae with dictionary of dependencies
+  * This needs to be a dependency to formula in another tool to trace back through tools
+  
+* Phases
+ * Phase I: Establish Tools with properties
+ * Phase II: Establish connections between tools
+ * Phase III: Establish dependencies between tools of formula
+  * Need to track formula, summarizing, filtering, renaming
+  * Need to start from terminal tools and trace back to initial tools
+ 
