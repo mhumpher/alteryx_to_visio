@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Feb  6 21:46:44 2018
-
-@author: mhumpher
-"""
-
 import xml.etree.ElementTree as etree
 import AlteryxTools as AT
 import copy
