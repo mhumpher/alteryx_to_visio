@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Feb  6 14:59:36 2018
-
-@author: mhumpher
-"""
-
 class AlteryxTool:
     #consIn = {}
     #consOut = {}    
