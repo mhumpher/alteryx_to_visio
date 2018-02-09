@@ -1,6 +1,6 @@
-class AlteryxTool:
-    #consIn = {}
-    #consOut = {}    
+import AlteryxFormula
+
+class AlteryxTool:   
     
     def __init__(self, toolId, toolType, x, y):
         self.toolId = toolId
@@ -35,6 +35,55 @@ class FormulaTool(AlteryxTool):
         self.consIn = {}
         self.consOut = {}
         self.formulas = {}
-        
+            
     def addFormula(self, expression, field, size, dataType):
-        pass
+        form = AlteryxFormula(expression, field, size, dataType)
+        self.formulas[field] = form
+        
+class SelectTool(AlteryxTool):
+    def __init__(self, toolId, toolType, x, y):
+        self.toolId = toolId
+        self.toolType = toolType
+        self.x = x
+        self.y = y
+        self.consIn = {}
+        self.consOut = {}
+        #should we care about the order of the fields?
+        self.fields = {}
+
+###############################################################################
+#
+#Special Tools
+#- Documentation
+#
+###############################################################################        
+class DocumentationTool:
+    def __init__(self, toolId, toolType, x, y, width, height):
+        self.toolId = toolId
+        self.toolType = toolType
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        
+class ToolContainer(DocumentationTool):
+    def __init__(self, toolId, toolType, x, y, width, height, caption):
+        self.toolId = toolId
+        self.toolType = toolType
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.caption = caption
+        self.childTools = {}
+        
+class TextBoxTool(DocumentationTool):
+    def __init__(self, toolId, toolType, x, y, width, height, text):
+        self.toolId = toolId
+        self.toolType = toolType
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.text = text
+        
