@@ -1,6 +1,5 @@
 import xml.etree.ElementTree as etree
 import AlteryxTools as AT
-import copy
 
 class AlteryxWorkflow:
     
@@ -23,17 +22,17 @@ class AlteryxWorkflow:
             #Ignore Tool Containers for now
             if tooltype == 'ToolContainer':
                 childNodes = node.find('ChildNodes').findall('Node')
-                #nodelst = nodelst + nodeScan(childNodes)
                 self.nodeScan(childNodes)
             else:
+                #This will need to broken out based on different types of tools
+                #for the formula search we will need formula tools and any tool
+                #that can rename a field or perform a calculation (e.g. Select, Summarize, etc.)
                 toolID = node.attrib['ToolID']
                 x = float(guiSet.find('Position').attrib['x'])/40
                 #Alteryx is up down positive, whereas Visio is down up
                 y = -1*float(guiSet.find('Position').attrib['y'])/40
                 altTool = AT.AlteryxTool(toolID, tooltype, x, y)
                 self.altToolDict[toolID] = altTool
-                #nodelst.append([toolID, x, y, tooltype])
-            #return nodelst
     
     def loadWorkflow(self, filepath):
         tree = etree.parse(filepath)
@@ -51,5 +50,6 @@ class AlteryxWorkflow:
             self.altToolDict[destID].consIn[originID] = self.altToolDict[originID]
 
         #Now determine formula dependencies
+
         
     
