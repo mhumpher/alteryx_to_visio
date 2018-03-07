@@ -1,11 +1,19 @@
 import xml.etree.ElementTree as etree
 import AlteryxTools as AT
+import pickle
 
 class AlteryxWorkflow:
     
-    def __init__(self, altToolDict = {}):
+    def __init__(self, altToolDict = {}, filepath = ""):
         self.altToolDict = altToolDict
-    
+        self.filepath = filepath
+        if filepath != "":
+            self.loadWorkflow(filepath)
+            
+    def saveWFObj(self, filepath):
+        output = open(filepath, "wb")
+        pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
+        
     #Generates a dictionary of all of the Alteryx Tool objects from the XML
     #into the Alteryx Workflow object. 
     def nodeScan(self, nodes):
@@ -22,6 +30,7 @@ class AlteryxWorkflow:
             #Ignore Tool Containers for now
             if tooltype == 'ToolContainer':
                 childNodes = node.find('ChildNodes').findall('Node')
+                #nodelst = nodelst + nodeScan(childNodes)
                 self.nodeScan(childNodes)
             else:
                 #This will need to broken out based on different types of tools
@@ -33,6 +42,8 @@ class AlteryxWorkflow:
                 y = -1*float(guiSet.find('Position').attrib['y'])/40
                 altTool = AT.AlteryxTool(toolID, tooltype, x, y)
                 self.altToolDict[toolID] = altTool
+                #nodelst.append([toolID, x, y, tooltype])
+            #return nodelst
     
     def loadWorkflow(self, filepath):
         tree = etree.parse(filepath)
@@ -51,5 +62,12 @@ class AlteryxWorkflow:
 
         #Now determine formula dependencies
 
-        
-    
+###############################################################################
+#END OF ALTERYX WORKFLOW CLASS DEFINITION
+###############################################################################
+
+def loadWFObj(self, filepath):
+    input = open(filepath, "rb")
+    altWFLoaded = pickle.load(input)
+    return altWFLoaded
+       
