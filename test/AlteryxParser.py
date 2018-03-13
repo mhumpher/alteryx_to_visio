@@ -14,25 +14,36 @@ def alteryx_to_visio():
 
     altWf = altxWF.AlteryxWorkflow()
     altWf.loadWorkflow(alteryxPath)    
-
+    
     visio_obj = {}
     
     #Create visio shape objects
     for key in  altWf.altToolDict:
-        shpObj = pagObj.Drop(mastObj, altWf.altToolDict[key].x, altWf.altToolDict[key].y)
-        shpObj.Text = altWf.altToolDict[key].toolType + " (" + key + ")"
+        altTool = altWf.altToolDict[key]
+        shpObj = pagObj.Drop(mastObj, altTool.x, altTool.y)
+        if altTool.toolType == 'Formula':
+            text = altTool.toolType + " (" + key + ")"
+            for f in altTool.fields:
+                text = text + "\n " + altTool.fields[f].name + " = " + altTool.fields[f].formulaExp
+            shpObj.Text = text
+        elif altTool.toolType == 'AlteryxSelect':
+            text = altTool.toolType + " (" + key + ")"
+            for f in altTool.fields:
+                text = text + "\n " + altTool.fields[f].name
+            shpObj.Text = text
+        else:
+            shpObj.Text = altTool.toolType + " (" + key + ")"
         visio_obj[key] = shpObj
         
     pagObj.ResizeToFitContents()
     
     #create connections between objects
     for origkey in  altWf.altToolDict:
-        #connectorMaster = appVisio.Application.ConnectorToolDataObject
         for destKey in altWf.altToolDict[origkey].consOut:
             origObj = visio_obj[origkey]
             destObj = visio_obj[destKey]
 
             origObj.AutoConnect(destObj,0)
-
+            
 if __name__ == "__main__":
     alteryx_to_visio()
