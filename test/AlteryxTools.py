@@ -1,5 +1,3 @@
-import AlteryxFormula
-
 class AlteryxTool:   
     
     def __init__(self, toolId, toolType, x, y):
@@ -9,6 +7,7 @@ class AlteryxTool:
         self.y = y
         self.consIn = {}
         self.consOut = {}
+        self.fields = {}
         
     def addConIn(self, toolId, altTool):
         self.consIn[toolId] = altTool
@@ -24,32 +23,6 @@ class AlteryxTool:
     #If no connections in, tool is considered initial
     def isInitial(self):
         return not bool(self.consIn)
-        
-class FormulaTool(AlteryxTool):
-    
-    def __init__(self, toolId, toolType, x, y):
-        self.toolId = toolId
-        self.toolType = toolType
-        self.x = x
-        self.y = y
-        self.consIn = {}
-        self.consOut = {}
-        self.formulas = {}
-            
-    def addFormula(self, expression, field, size, dataType):
-        form = AlteryxFormula(expression, field, size, dataType)
-        self.formulas[field] = form
-        
-class SelectTool(AlteryxTool):
-    def __init__(self, toolId, toolType, x, y):
-        self.toolId = toolId
-        self.toolType = toolType
-        self.x = x
-        self.y = y
-        self.consIn = {}
-        self.consOut = {}
-        #should we care about the order of the fields?
-        self.fields = {}
 
 ###############################################################################
 #
