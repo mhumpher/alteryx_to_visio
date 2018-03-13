@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as etree
 import AlteryxTools as AT
+import AlteryxField as AF
 import pickle
 
 class AlteryxWorkflow:
@@ -41,9 +42,30 @@ class AlteryxWorkflow:
                 #Alteryx is up down positive, whereas Visio is down up
                 y = -1*float(guiSet.find('Position').attrib['y'])/40
                 altTool = AT.AlteryxTool(toolID, tooltype, x, y)
+
+                if tooltype == 'Formula':
+                    formulaFields = node.find('./Properties/Configuration/FormulaFields')
+                    for formulaField in formulaFields:
+                        formulaExp = formulaField.attrib['expression']
+                        fieldName = formulaField.attrib['field']
+                        fieldSize = formulaField.attrib['size']
+                        fieldType = formulaField.attrib['type']
+                        altField = AF.AlteryxField(name = fieldName, size = fieldSize, dataType = fieldType, formulaExp = formulaExp)
+                        altTool.fields[fieldName] = altField
+                elif tooltype == 'AlteryxSelect':
+                    selectFields = node.find('./Properties/Configuration/SelectFields')
+                    for selectField in selectFields:
+                        fieldName = selectField.attrib['field']
+                        fieldSelect = (selectField.attrib['selected'] == 'True')
+                        fieldSize = selectField.attrib.get('size', '')
+                        fieldType = selectField.attrib.get('type', '')
+                        fieldRename = selectField.attrib.get('rename', fieldName)
+                                
+                        altField = AF.AlteryxField(name = fieldName, size = fieldSize, \
+                                dataType = fieldType, selected = fieldSelect, rename = fieldRename)
+                        altTool.fields[fieldName] = altField
+                
                 self.altToolDict[toolID] = altTool
-                #nodelst.append([toolID, x, y, tooltype])
-            #return nodelst
     
     def loadWorkflow(self, filepath):
         tree = etree.parse(filepath)
@@ -69,5 +91,4 @@ class AlteryxWorkflow:
 def loadWFObj(self, filepath):
     input = open(filepath, "rb")
     altWFLoaded = pickle.load(input)
-    return altWFLoaded
-       
+    return altWFLoaded   
