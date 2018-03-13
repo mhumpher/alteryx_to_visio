@@ -34,7 +34,7 @@ class AlteryxField:
         #may also want to look into using in-DB formula tools
         temp = re.sub('//.+?\\n', '', self.formulaExp) #remove comment lines
         temp = re.sub('/\*.+?\*/','', temp) #remove comment blocks
-        fieldList = re.sub('\[.*?\]', temp)
+        fieldList = re.sub('\[.*?\]', '',temp)
         for f in fieldList:
             f = f.replace('[', '')
             f = f.replace(']', '')
