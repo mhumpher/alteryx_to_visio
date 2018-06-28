@@ -7,8 +7,8 @@ class AlteryxTool:
         self.toolType = toolType
         self.x = x
         self.y = y
-        self.consIn = {}
-        self.consOut = {}
+        self.consIn = []
+        self.consOut = []
         self.fields = {}
         self.__tool_xml__ = tool_xml
         
@@ -24,10 +24,10 @@ class AlteryxTool:
         return self.fields.keys()
         
     def addConIn(self, toolId, altTool):
-        self.consIn[toolId] = altTool
+        self.consIn.append([toolId, altTool])
         
     def addConOut(self, toolId, altTool):
-        self.consOut[toolId] = altTool 
+        self.consOut.append([toolId, altTool]) 
         
     #If no connections out, tool is considered terminal
     def isTerminal(self):
@@ -56,6 +56,30 @@ class AlteryxTool:
             if self.fields[key].outputName == fieldname:
                 return self.fields[key]
         return ""
+        
+    def getConOutIds(self):
+        conOutIds = []
+        for con in self.consOut:
+            conOutIds.append(con[0])
+        return conOutIds
+        
+    def getConInIds(self):
+        conInIds = []
+        for con in self.consIn:
+            conInIds.append(con[0])
+        return conInIds
+        
+    def getConOutTools(self):
+        conOutTools = []
+        for con in self.consOut:
+            conOutTools.append(con[1])
+        return conOutTools
+        
+    def getConInTools(self):
+        conInTools = []
+        for con in self.consOut:
+            conInTools.append(con[1])
+        return conInTools
                         
 
             

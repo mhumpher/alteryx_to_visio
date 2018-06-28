@@ -2,6 +2,7 @@
 
 import xml.etree.ElementTree as etree
 import AlteryxTools as AT
+import AlteryxConnection as AC
 #import AlteryxField as AF
 import pickle
 
@@ -65,9 +66,11 @@ class AlteryxWorkflow:
         for con in cons:
             originID = con.find('Origin').attrib['ToolID']
             destID = con.find('Destination').attrib['ToolID']
+            
+            altConn = AC.AlteryxConnection(con, self.altToolDict[originID], self.altToolDict[destID])
 
-            self.altToolDict[originID].consOut[destID] = self.altToolDict[destID]
-            self.altToolDict[destID].consIn[originID] = self.altToolDict[originID]
+            self.altToolDict[originID].addConOut(destID, altConn)
+            self.altToolDict[destID].addConIn(originID, altConn)
 
         #Now determine formula dependencies
         #Get all terminal tools
