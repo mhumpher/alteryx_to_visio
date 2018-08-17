@@ -1,4 +1,4 @@
-#A minor change
+#version 0.2
 
 import xml.etree.ElementTree as etree
 import matplotlib as mp
@@ -144,12 +144,12 @@ class AlteryxWorkflow:
                         toolList.append((n, name, exp)) 
         return toolList
        
-  
+             
     def drawWFGraph(self):
         g = self.workflowGraph
         pos = {}
         for n in g.nodes():
-            node_xml= g.node[n]['__node_xml__']
+            node_xml= g.node[n]['node_xml']
             guiSet = node_xml.find('GuiSettings')
             x = float(guiSet.find('Position').attrib['x'])
             y = -float(guiSet.find('Position').attrib['y'])
