@@ -1,4 +1,4 @@
-#Version 0.2
+#A minor change
 
 import xml.etree.ElementTree as etree
 import matplotlib as mp
@@ -10,8 +10,6 @@ import networkx as nx
 class AlteryxWorkflow:
     
     def __init__(self, filepath = ""):
-        #self.workflowGraph = nx.DiGraph() 
-        #self.filepath = filepath
         if filepath != "":
             self.load_workflow(filepath)
             
@@ -23,7 +21,7 @@ class AlteryxWorkflow:
         tree = etree.parse(filepath)
         root = tree.getroot()     
         prop_xml = root.find('Properties')
-        self.workflowGraph = nx.DiGraph(properties_xml = prop_xml, tree_xml = tree)
+        self.workflowGraph = nx.MultiDiGraph(properties_xml = prop_xml, tree_xml = tree)
         
         nodes = root.findall('./Nodes/Node')
         cons = root.findall('./Connections/Connection')
@@ -32,21 +30,16 @@ class AlteryxWorkflow:
         
         for con in cons:
             originID = con.find('Origin').attrib['ToolID']
-            originName = con.find('Origin').get('name')
             destID = con.find('Destination').attrib['ToolID']
-            destName = con.find('Destination').get('name')
             conName = con.get('name')
-            wirelessFlag = con.get('Wireless', 'False')
 
             
             self.workflowGraph.add_edge(originID, destID,
-                                        origin_name = originName,
-                                        destination_name = destName,
                                         connection_name = conName,
-                                        wireless = wirelessFlag)
+                                        connection_xml = con)
         
-    #Generates a dictionary of all of the Alteryx Tool objects from the XML
-    #into the Alteryx Workflow object. 
+    #Adds all of the tools as nodes in the NetworkX graph with the XML
+    #Element tree included as an attribute
     def _nodeScan(self, nodes):
         graphNodes = []
         for node in nodes:
@@ -58,21 +51,17 @@ class AlteryxWorkflow:
                 tooltype = node.find("EngineSettings").attrib['Macro']
         
             #check if node is a tool contianer
-            #Ignore Tool Containers for now
             if tooltype == 'ToolContainer':
                 childNodes = node.find('ChildNodes').findall('Node')
                 graphChildNodes = self._nodeScan(childNodes)
                 self.workflowGraph.add_node(node.attrib['ToolID'], 
                     toolType = tooltype, 
-                    __node_xml__ = node, 
+                    node_xml = node, 
                     childNodes = graphChildNodes)
             else:
-            #This will need to broken out based on different types of tools
-            #for the formula search we will need formula tools and any tool
-            #that can rename a field or perform a calculation (e.g. Select, Summarize, etc.)
                 self.workflowGraph.add_node(node.attrib['ToolID'], 
                                             toolType = tooltype, 
-                                            __node_xml__ = node)
+                                            node_xml = node)
             graphNodes.append(node.attrib['ToolID'])
         return graphNodes
             
@@ -92,8 +81,8 @@ class AlteryxWorkflow:
         g = self.workflowGraph
         n = g.nodes(data = True)
         exp = [x for x,d in n 
-            if (d['__node_xml__'].find('.//Expression') != None 
-                or d['__node_xml__'].find('.//*[@expression]') != None) 
+            if (d['node_xml'].find('.//Expression') != None 
+                or d['node_xml'].find('.//*[@expression]') != None) 
                 and d['toolType'] != 'ToolContainer']
         return exp
     
@@ -105,13 +94,6 @@ class AlteryxWorkflow:
         tempExp = tempExp.replace('&#xA;', '\n')
         return tempExp
         
-    '''
-    def getToolDict(self):
-        toolDict = {}
-        for t in self.workflowGraph.nodes():
-            toolDict[t] = self.workflowGraph.node[t]['toolObj']
-        return toolDict
-    ''' 
     
     #Returns tuples of toolID number, field name and formula expression
     #for each of the expression in formula tools that match the pattern.       
@@ -128,7 +110,7 @@ class AlteryxWorkflow:
         for n in form_nodes:
             currTool = g.node[n] #gives attribute dictionary for node id n
             if currTool['toolType'] == 'Formula':
-                form_fields = currTool['__node_xml__'].findall('.//*[@expression]')
+                form_fields = currTool['node_xml'].findall('.//*[@expression]')
                 print(form_fields)
                 for f in form_fields:
                     name = f.get('name')
@@ -152,7 +134,7 @@ class AlteryxWorkflow:
         for n in form_nodes:
             currTool = g.node[n] #gives attribute dictionary for node id n
             if currTool['toolType'] == 'Formula':
-                form_fields = currTool['__node_xml__'].findall('.//*[@expression]')
+                form_fields = currTool['node_xml'].findall('.//*[@expression]')
                 print(form_fields)
                 for f in form_fields:
                     name = f.get('name')
@@ -162,7 +144,7 @@ class AlteryxWorkflow:
                         toolList.append((n, name, exp)) 
         return toolList
        
-             
+  
     def drawWFGraph(self):
         g = self.workflowGraph
         pos = {}
